@@ -20,7 +20,7 @@ const TicTacToe = () => {
   const checkWin = (tiles) => {
     console.log('checking win')
 
-    let status = winningComb.forEach(combination => {
+    winningComb.forEach(combination => {
       if (tiles.includes(combination[0])) {
         console.log("pass 1")
         if (tiles.includes(combination[1])) {
@@ -54,9 +54,9 @@ const TicTacToe = () => {
         e.target.append(symbol);
         e.target.classList.add("marked");
         if (isPlayer1) {
-          e.target.classList.add("player1");
+          e.target.classList.add("white");
         } else {
-          e.target.classList.add("player2");
+          e.target.classList.add("orange");
         };
         isPlayer1 ? (
           setPlayer1Tiles([...player1Tiles, num])
@@ -70,40 +70,28 @@ const TicTacToe = () => {
     console.log('mark tile end')
   }
 
-  const checkTiles = () => {
-    console.log("player 1")
-    player1Tiles.forEach(sum => console.log(sum))
-    console.log("player 2")
-    player2Tiles.forEach(sum => console.log(sum))
-  }
-
-  const checkWins = () => {
-    checkWin(player1Tiles);
-    checkWin(player2Tiles);
-  }
-
 
   return (
     <>
       {gameFinished ?
-        <h1>COMPLETE</h1> :
-        (isPlayer1 ? <h1>Player 1's Turn</h1> : <h1>Player 2's Turn</h1>)
+        <h1 className="white">WINNER!!</h1> :
+        (isPlayer1 ? <h1 className="white">Player 1's Turn</h1> : <h1 className="orange">Player 2's Turn</h1>)
       }
       <div id="board" className="board">
         <div className="row">
-          <div className="tile" onClick={(e) => markTile(e, 1)}></div>
-          <div className="tile" onClick={(e) => markTile(e, 2)}></div>
-          <div className="tile" onClick={(e) => markTile(e, 3)}></div>
+          <div className="tile top left" onClick={(e) => markTile(e, 1)}></div>
+          <div className="tile top" onClick={(e) => markTile(e, 2)}></div>
+          <div className="tile top right" onClick={(e) => markTile(e, 3)}></div>
         </div>
         <div className="row">
-          <div className="tile" onClick={(e) => markTile(e, 4)}></div>
-          <div className="tile" onClick={(e) => markTile(e, 5)}></div>
-          <div className="tile" onClick={(e) => markTile(e, 6)}></div>
+          <div className="tile mid left" onClick={(e) => markTile(e, 4)}></div>
+          <div className="tile mid" onClick={(e) => markTile(e, 5)}></div>
+          <div className="tile mid right" onClick={(e) => markTile(e, 6)}></div>
         </div>
         <div className="row">
-          <div className="tile" onClick={(e) => markTile(e, 7)}></div>
-          <div className="tile" onClick={(e) => markTile(e, 8)}></div>
-          <div className="tile" onClick={(e) => markTile(e, 9)}></div>
+          <div className="tile bottom left" onClick={(e) => markTile(e, 7)}></div>
+          <div className="tile bottom" onClick={(e) => markTile(e, 8)}></div>
+          <div className="tile bottom right" onClick={(e) => markTile(e, 9)}></div>
         </div>
       </div>
 
