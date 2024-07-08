@@ -16,9 +16,6 @@ const [startGame, setStartGame] = useState(false);
   const [player2Tiles, setPlayer2Tiles] = useState([]);
 
   const winningComb = [[1,2,3], [1,4,7], [1,5,9], [2,5,8], [3,5,7], [4,5,6], [3,6,9], [7,8,9]];
-  //123, 456, 789, 157, 258, 469, 159, 357
-  //123, 157, 159, 258, 357, 456, 469, 789
-  // use the find array method
 
   const refreshWindow = () => {
     window.location.reload()
@@ -29,6 +26,8 @@ const [startGame, setStartGame] = useState(false);
   }
 
   const checkWin = (tiles) => {
+    console.log('checking win')
+
     let status = winningComb.forEach(combination => {
       if(tiles.includes(combination[0])){
         console.log("pass 1")
@@ -41,6 +40,7 @@ const [startGame, setStartGame] = useState(false);
           }
         }
     })
+    console.log('win checked')
   }
 
   useEffect(() => {
@@ -52,6 +52,8 @@ const [startGame, setStartGame] = useState(false);
   }, [player2Tiles]);
 
   const markTile = (e, num) => {
+    console.log("tile mark begin")
+
     if(!gameFinished)
     {
       let symbol = null;
@@ -73,25 +75,9 @@ const [startGame, setStartGame] = useState(false);
         setIsPlayer1(!isPlayer1);
       }
     }
-  }
 
-  /*
-  const markTile = (e, num) => {
-    let symbol = null;
-    isPlayer1 ? symbol = "X" : symbol = "O";
-
-    if (!e.target.classList.contains("marked")) {
-      e.target.append(symbol);
-      e.target.classList.add("marked");
-      isPlayer1 ? (
-        setPlayer1Tiles([...player1Tiles, num])
-      ) : (
-        setPlayer2Tiles([...player2Tiles, num])
-      );
-      setIsPlayer1(!isPlayer1);
-    }
+    console.log('mark tile end')
   }
-  */
 
     const checkTiles = () => {
       console.log("player 1")
@@ -110,8 +96,10 @@ const [startGame, setStartGame] = useState(false);
     <>
     <button onClick={beginGame}></button>
     
-      {gameFinished ? <h1>COMPLETE</h1> : 
-      (isPlayer1 ? <h1>Player 1's Turn</h1> : <h1>Player 2's Turn</h1>)}
+      {gameFinished ? 
+      <h1>COMPLETE</h1>: 
+      (isPlayer1 ? <h1>Player 1's Turn</h1> : <h1>Player 2's Turn</h1>)
+      }
       <div id="board" className="board">
         <div className="row">
           <div className="tile" onClick={(e) => markTile(e, 1)}></div>
@@ -133,7 +121,7 @@ const [startGame, setStartGame] = useState(false);
       <button onClick={refreshWindow}>Reset</button>
     
     </>
-  )
+  );
 }
 
 export default App
