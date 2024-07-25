@@ -133,3 +133,7 @@ button:hover {
 .bottom {
   border-bottom: none;
 }
+
+.no-click {
+  pointer-events: none;
+}
