@@ -2,11 +2,9 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 
 
-const TicTacToe = () => {
+const TicTacToe = ({ onePlayerMode }) => {
 
   const [isCpuTurn, setIsCpuTurn] = useState(false);
-  const [clickDisabled, setClickDisabled] = useState(false);
-  const [onePlayerMode, setOnePlayerMode] = useState(true);
 
   const [gameFinished, setGameFinished] = useState(false);
   const [isPlayer1, setIsPlayer1] = useState(true);
@@ -14,49 +12,112 @@ const TicTacToe = () => {
   const [player1Tiles, setPlayer1Tiles] = useState([]);
   const [player2Tiles, setPlayer2Tiles] = useState([]);
 
-  const winningComb = [[1, 2, 3], [1, 4, 7], [1, 5, 9], [2, 5,                                                                8], [3, 5, 7], [4, 5, 6], [3, 6, 9], [7, 8, 9]];
-
+  
+  const shuffle = (array) => {
+    let currentIndex = array.length;    
+    while (currentIndex != 0) {
+      
+      // Pick a remaining element
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    
+    return array; // Make sure to return the shuffled array
+  }
+  
+  const winningCombs = [[1, 2, 3], [1, 4, 7], [1, 5, 9], [2, 5, 8], [3, 5, 7], [4, 5, 6], [3, 6, 9], [7, 8, 9]];
+  const winningComb = shuffle([...winningCombs]);
 
   const refreshWindow = () => {
     window.location.reload()
   }
 
   const comTurn = (tiles) => {
-    if(tiles.length == 0 && isCpuTurn) {
+    if (!isCpuTurn) return;
+
+    let moveMade = false;
+
+    // CPU makes a random move if it's the first move
+    if (tiles.length === 0) {
       const randNum = Math.floor(Math.random() * 9) + 1;
       document.getElementById(`tile${randNum}`).click();
+      moveMade = true;
     } else {
-      winningComb.forEach(combination => {
-        const matches = tiles.filter(e => combination.includes(e)).length;
-        if(matches >= 1) {
-          for(let i=0; i < 2; i++) {
-            if(document.getElementById(`tile${combination[i]}`).classList.contains("unmarked")) {
-              document.getElementById(`tile${combination[i]}`).click();
-              return;
+      // Prioritize making a move in winning combinations with 2 matches
+      for (const combination of winningComb) {
+        const matches = tiles.filter(e => combination.includes(e));
+        if (matches.length === 2) {
+          for (const choice of combination) {
+            const tile = document.getElementById(`tile${choice}`);
+            if (tile && tile.classList.contains("unmarked")) {
+              tile.click();
+              moveMade = true;
+              break;
             }
           }
         }
-      })
-    };
-  }
+        if (moveMade) break; // Exit if a move was made
+      }
 
-  const checkWin = (tiles) => {
-    console.log('checking win')
-
-    winningComb.forEach(combination => {
-      if (tiles.includes(combination[0])) {
-        console.log("pass 1")
-        if (tiles.includes(combination[1])) {
-          console.log("pass 2")
-          if (tiles.includes(combination[2])) {
-            console.log("pass 3")
-            setGameFinished(true);
+      // If no prioritized move was made, make a move in any winning combination with at least 1 match
+      if (!moveMade) {
+        for (const combination of winningComb) {
+          const matches = tiles.filter(e => combination.includes(e));
+          if (matches.length >= 1) {
+            for (const choice of combination) {
+              const tile = document.getElementById(`tile${choice}`);
+              if (tile && tile.classList.contains("unmarked")) {
+                tile.click();
+                moveMade = true;
+                break;
+              }
+            }
           }
+          if (moveMade) break; // Exit if a move was made
         }
       }
-    })
-    console.log('win checked')
+
+
+      if (moveMade) {
+        setIsCpuTurn(false); // Change to player's turn
+      }
+    }
+
+    if (moveMade) {
+      setIsCpuTurn(false); // Change to player's turn
+    }
   }
+
+
+  const checkWin = (tiles) => {
+    winningComb.forEach(combination => {
+      if (tiles.includes(combination[0]) && tiles.includes(combination[1]) && tiles.includes(combination[2])) {
+        setGameFinished(true);
+      }
+    })
+  }
+
+  // const checkWin = (tiles) => {
+  //   console.log('checking win')
+
+  //   winningComb.forEach(combination => {
+  //     if (tiles.includes(combination[0])) {
+  //       console.log("pass 1")
+  //       if (tiles.includes(combination[1])) {
+  //         console.log("pass 2")
+  //         if (tiles.includes(combination[2])) {
+  //           console.log("pass 3")
+  //           setGameFinished(true);
+  //         }
+  //       }
+  //     }
+  //   })
+  //   console.log('win checked')
+  // }
 
   useEffect(() => {
     checkWin(player1Tiles);
@@ -66,38 +127,45 @@ const TicTacToe = () => {
     checkWin(player2Tiles);
   }, [player2Tiles]);
 
-  if(onePlayerMode){
-  useEffect(() => {
-    comTurn(player2Tiles);
-  }, [isCpuTurn == true]);
+  if (onePlayerMode) {
+    useEffect(() => {
+      setTimeout(() => comTurn(player2Tiles), 1250);
+    }, [isCpuTurn]);
   }
-  
+
   const markTile = (e, num) => {
     console.log("tile mark begin")
 
     if (!gameFinished && e.target.classList.contains("unmarked")) {
+      // Set symbol as X or O pending on player, append, and set tile as marked
       const symbol = isPlayer1 ? ("X") : ("O");
+      e.target.append(symbol);
+      e.target.classList.remove("unmarked");
+      e.target.classList.add("marked");
 
-        e.target.append(symbol);
-        e.target.classList.remove("unmarked");
-        e.target.classList.add("marked");
-        
-        if (isPlayer1) {
-          e.target.classList.add("white");
-          setPlayer1Tiles([...player1Tiles, num]);
-        } else {
-          e.target.classList.add("orange");
-          setPlayer2Tiles([...player2Tiles, num]);
-        };
+      if (isPlayer1) {
+        e.target.classList.add("white");
+        setPlayer1Tiles([...player1Tiles, num]);
+      } else {
+        e.target.classList.add("orange");
+        setPlayer2Tiles([...player2Tiles, num]);
+      };
 
-        console.log(isCpuTurn);
-        setIsCpuTurn(isCpuTurn => !isCpuTurn);
-        setIsPlayer1(isPlayer1 => !isPlayer1);
-        
-      }
+      setIsPlayer1(!isPlayer1);  // Change players
       
-      console.log(isCpuTurn);
+      if (!isCpuTurn) setIsCpuTurn(true); // only change if it's currently the human's turn (avoid endless useEffect)
+    }
     console.log('mark tile end')
+  }
+
+
+  const checkCpuTurn = () => {
+    if (isCpuTurn) {
+      console.log("cpu turn")
+    }
+    else {
+      console.log("player turn")
+    }
   }
 
 
@@ -126,6 +194,7 @@ const TicTacToe = () => {
       </div>
 
       <button onClick={refreshWindow}>Reset</button>
+      <button onClick={checkCpuTurn}>Check CPU Turn</button>
 
     </>
   );

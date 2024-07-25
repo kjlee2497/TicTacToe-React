@@ -8,18 +8,25 @@ import TicTacToe from './tictactoe';
 
 function App() {
 const [startGame, setStartGame] = useState(false);
+const [onePlayerMode, setOnePlayerMode] = useState(false);
+
+const startOnePlayer = () => {
+  setOnePlayerMode(true);
+  setStartGame(true);
+}
 
   return (
     <>
     {startGame ? 
-    <TicTacToe /> :
+    <TicTacToe onePlayerMode = {onePlayerMode} /> :
     <div className='start'>
       <span className="title">
           <h1 className="blue">Tic</h1>
           <h1 className="orange">Tac</h1>
           <h1 className="yellow">Toe</h1>
       </span>
-      <button className="startButton" onClick={() => setStartGame(!startGame)}>Start Game</button>
+      <button className="startButton" onClick={() => setStartGame(true)}>Start Game</button>
+      <button className="startButton" onClick={() => startOnePlayer()}>Play CPU</button>
   </div>
     }
     </>
